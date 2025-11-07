@@ -1,0 +1,33 @@
+{
+  "name": "@repo/db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build":"tsc -b",
+    "drizzle-kit": "drizzle-kit",
+    "drizzle:generate": "drizzle-kit generate",
+    "drizzle:migrate": "tsx src/migrate.ts",
+    "drizzle:studio": "drizzle-kit studio"
+  },
+  "exports":{
+"./index": "./dist/index.js",
+    "./schema": "./dist/schema/index.js"
+
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "@types/pg": "^8.15.6",
+    "drizzle-kit": "^0.31.6"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "drizzle-orm": "^0.44.7",
+    "pg": "^8.16.3"
+  }
+}

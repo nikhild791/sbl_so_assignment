@@ -1,0 +1,1 @@
+{"root":["./drizzle.config.ts","./src/index.ts","./src/migrate.ts","./src/schema/index.ts"],"errors":true,"version":"5.9.2"}
