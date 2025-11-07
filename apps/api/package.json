@@ -14,13 +14,16 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "express": "^5.1.0",
-    "@repo/db":"*"
+    "@repo/db": "*",
+    "@repo/scrapper": "*",
+    "express": "^5.1.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
+    "cors": "^2.8.5",
     "eslint": "^9.39.1",
     "typescript": "^5.9.2"
   }

@@ -1,0 +1,21 @@
+{
+  "name": "@repo/scrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "exports":{
+    "./index":"./dist/index.js"
+  },
+  "scripts": {
+    "build":"tsc -b"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@repo/typescript-config": "*",
+    "@types/node": "^22.19.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
