@@ -1,0 +1,20 @@
+{
+  "name": "@repo/queue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "exports":{
+    ".":"./dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bullmq": "^5.63.0",
+    "ioredis": "^5.8.2"
+  }
+}

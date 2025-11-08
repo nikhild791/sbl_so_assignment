@@ -1,9 +1,8 @@
 import express from 'express'
 import { db } from "@repo/db/index";
 import {users ,tasks} from "@repo/db/schema"
-import {scrape} from "@repo/scrapper/index"
+import { taskQueue } from "@repo/queue";
 import cors from 'cors'
-import { getAIAnswer } from './ai/gemini';
 import { eq } from 'drizzle-orm';
 const port = process.env.PORT || 3001;
 
@@ -37,64 +36,38 @@ app.post('/user',async(req,res)=>{
   return res.status(201).json({msg:"User logged in",user})
 })
 
-app.get('/task/:taskId', async (req,res) => {
-  const taskIdParam = req.params.taskId
-  if(!taskIdParam){
-    return res.status(404).json({msg:"missing task id"})
-  }
-  const taskId = Number(taskIdParam)
-  if(Number.isNaN(taskId)){
-    return res.status(400).json({msg:"invalid task id"})
-  }
-  const taskStatus = await db.select().from(tasks).where(eq(tasks.id, taskId)).limit(1)
-  return res.send(taskStatus)
-})
+app.get('/task/:taskId', async (req, res) => {
+  const taskId = Number(req.params.taskId);
+  if (Number.isNaN(taskId)) return res.status(400).json({ msg: "Invalid task id" });
 
-app.post('/task',async(req,res)=>{
-  const {url,question,userId} = req.body;
-  if(!url || !question || !userId) return;
- try {
-    new URL(url);
-  } catch (e) {
-    return res.status(404).json({msg:"Invalid url"})
-  } 
- const taskIdResponse =  await db.insert(tasks).values({
+  const [task] = await db.select().from(tasks).where(eq(tasks.id, taskId)).limit(1);
+  if (!task) return res.status(404).json({ msg: "Not found" });
+
+  res.json(task);
+});
+
+app.post('/task', async (req, res) => {
+  const { url, question, userId } = req.body;
+  if (!url || !question || !userId)
+    return res.status(400).json({ msg: "Missing fields" });
+
+  try { new URL(url) } catch { return res.status(400).json({ msg: "Invalid URL" }) }
+
+  const [task] = await db.insert(tasks).values({
     url,
     question,
-    userId
-  }).returning({insertedId:tasks.id})
-  return res.status(201).json({msg:"Task is created",taskIdResponse})
-})
+    userId,
+    status: "queued"
+  }).returning({ id: tasks.id });
+  if(!task){
+    return res.status(404).json({msg:"Something went wrong"})
+  }
+  await taskQueue.add("scrape-job", { taskId: task.id }); // Queue it ✅
 
-app.get('/scrape/:taskId',async (req,res)=>{
-  const taskIdParam = req.params.taskId;
- if(!taskIdParam){
-    return res.status(404).json({msg:"missing task id"})
-  }
-  const taskId = Number(taskIdParam)
-  if(Number.isNaN(taskId)){
-    return res.status(400).json({msg:"invalid task id"})
-  }
- 
-  const task = await db.select().from(tasks).where(eq(tasks.id,taskId)).limit(1)
-  if(task[0]===undefined ){
-    return res.status(404).json({msg:"no task found"})
-  }
-   const data = await scrape(task[0]?.url)
-   await db.update(tasks).set({status:'scraped'}).where(eq(tasks.id , taskId))
-   if(data===undefined){
-    return res.status(404).json({msg:"cannot scrape data"})
-   }
-   
-    const aiResponse = await getAIAnswer(data,task[0]?.question)
-    await db.update(tasks).set({
-        aiResponse,
-      status:'completed'
-      })
-      res.status(200).json({data:aiResponse})
-      await db.update(tasks).set({status:'completed'})
-  
-})
+  res.status(202).json({ taskId: task.id });
+});
+
+
 
 
 
