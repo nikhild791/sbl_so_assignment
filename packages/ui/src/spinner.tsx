@@ -15,7 +15,17 @@ export const Spinner = ({ size = 24, className, "aria-label": ariaLabel = "Loadi
     32: "w-8 h-8 border-2",
   }[size] || "w-6 h-6 border-2";
 
-  const classes = ["animate-spin", "rounded-full", "border-t-transparent", "border-white", sizeClass, className]
+  // Default colors: subtle ring with a colored top for visibility on both light/dark
+  const classes = [
+    "animate-spin",
+    "rounded-full",
+    "border-t-transparent",
+    "border-gray-200",
+    "dark:border-gray-700",
+    "border-t-blue-500",
+    sizeClass,
+    className,
+  ]
     .filter(Boolean)
     .join(" ");
 
