@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from 'react-markdown';
 import {Spinner} from '@repo/ui/spinner';
-import { StatusProgress, Step } from "@repo/ui/checkList";
+import LoadingOverlay from '@repo/ui/loading';
+import { Step } from "@repo/ui/checkList";
 
 
 export default function Home() {
@@ -15,61 +16,75 @@ export default function Home() {
  
 const [steps, setSteps] = useState<Step[]>([]);
 
-  useEffect(()=>{
-   
-    async function getTaskStatus(){
-        if(taskId!=null){
-         const res = await fetch(`http://localhost:3001/task/${taskId}`)
-        const taskStatus = await res.json()
-        setSteps(prev => [
-  ...prev,
-  { state: taskStatus.state, progress: taskStatus.progress }
-]);
-if(taskStatus.progress===100){
-  setData(taskStatus.result)
-}
-        setFinalTaskStatus(taskStatus.state)
+  useEffect(() => {
+    const buildSteps = (progress: number): Step[] => {
+      const template = [
+        { state: "queued", progress: 10 },
+        { state: "scrapped", progress: 50 },
+        { state: "ai calling", progress: 70 },
+        { state: "completed", progress: 100 },
+      ];
+
+      return template.map((t) => {
+        let state: string = "waiting";
+        if (progress >= t.progress) state = "completed";
+        else if (progress > (t.progress - 30) && progress < t.progress) state = "running";
+        return { state, progress: t.progress } as Step;
+      });
+    };
+
+    async function getTaskStatus() {
+      if (taskId != null) {
+        const res = await fetch(`http://localhost:3001/task/${taskId}`);
+        const taskStatus = await res.json();
+        setSteps(buildSteps(taskStatus.progress || 0));
+        if (taskStatus.progress === 100) {
+          setData(taskStatus.result);
         }
-
-    }
-    getTaskStatus()
-    let timer ;
-    if(taskId && finalTaskStatus !== "completed" ){
- timer = setInterval(()=>{
-            getTaskStatus()
-        },1500)
+        setFinalTaskStatus(taskStatus.state);
+      }
     }
 
-    return ()=>{
-        clearInterval(timer)
+    getTaskStatus();
+    let timer: any;
+    if (taskId && finalTaskStatus !== "completed") {
+      timer = setInterval(() => {
+        getTaskStatus();
+      }, 1500);
     }
-  },[taskId,finalTaskStatus])
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [taskId, finalTaskStatus]);
 
 
-  const handleSubmit =async (e: React.FormEvent) => {
-    setLoading(true)
+  const handleSubmit = async (e: React.FormEvent) => {
+    setLoading(true);
     e.preventDefault();
-    if(!url || !question){
+    if (!url || !question) {
+      setLoading(false);
       return null;
     }
-    const res = await fetch('http://localhost:3001/task',{
-      method:'POST',
-       headers: {
-    'Content-Type': 'application/json' 
-  },
-      body:JSON.stringify({
+    const res = await fetch('http://localhost:3001/task', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
         url,
         question
       })
-    })
+    });
     const data = await res.json();
 
-    setTaskId(data.taskId)
-    setLoading(false)
+    setTaskId(data.taskId);
+    // keep local button loading minimal; overlay will handle the job progress
+    setLoading(false);
   };
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-4">
-      <div className="flex flex-row gap-8">
+  <div className="flex flex-row gap-8">
 
       <form
         onSubmit={handleSubmit}
@@ -111,13 +126,50 @@ if(taskStatus.progress===100){
         </button>
       </form>
       <div className="w-full">
-      <StatusProgress title="Website scrapping job" steps={steps} />
+        {/* keep a small inline status card for desktop, overlay handles the main UX */}
+        <div className="hidden md:block">
+          <div className="w-full">
+            {/* reuse StatusProgress for the inline card */}
+            <div className="w-full max-w-lg border rounded-lg shadow-sm p-4 bg-white">
+              <h2 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">Website scrapping job</h2>
+              <div className="space-y-6">
+                {steps.map((step, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <div className="flex flex-col items-center">
+                      {step.state === "completed" && (
+                        <div className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center">✓</div>
+                      )}
+                      {step.state === "running" && (
+                        <div className="text-blue-500 animate-spin">●</div>
+                      )}
+                      {step.state === "waiting" && (
+                        <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+                      )}
+                      {index < steps.length - 1 && (
+                        <div className="w-px h-8 bg-gray-300 mt-1"></div>
+                      )}
+                    </div>
+
+                    <div>
+                      {step.progress === 10 && <div>queued</div>}
+                      {step.progress === 50 && <div>scrapped</div>}
+                      {step.progress === 70 && <div>ai calling</div>}
+                      {step.progress === 100 && <div>completed</div>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
             </div>
+      <div>
+        <ReactMarkdown>{data}</ReactMarkdown>
+      </div>
 
-        <div>
-          <ReactMarkdown>{data}</ReactMarkdown>
-          </div>
+      {/* Loading overlay tracks the whole pipeline and shows progress */}
+      <LoadingOverlay visible={!!taskId && finalTaskStatus !== "completed"} steps={steps} />
       
     </div>
   );
