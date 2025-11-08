@@ -1,32 +1,33 @@
-
+import dotenv from 'dotenv';
 import { createWorker } from "@repo/queue";
 import { db } from "@repo/db/index";
 import {tasks} from "@repo/db/schema"
 import { getAIAnswer } from "@repo/ai/index"; 
 import { scrape } from "@repo/scrapper/index";
-import { eq } from 'drizzle-orm';
+dotenv.config()
 
 export default createWorker(async job => {
-  const { taskId } = job.data;
+  const { url, question } = job.data;
+ 
+ 
+  await job.updateProgress(10); // Update status: starting scrape
 
-  // 1. Update status → scraping
-  if(!taskId){
-    return false;
-  }
-  await db.update(tasks).set({ status: "scraping" }).where(eq(tasks.id,taskId));
-
-  const scrapedText = await scrape(job.data.url);
+  const scrapedText = await scrape(url);
   if(!scrapedText){
     return false
   }
-  await db.update(tasks).set({ status: "ai_processing" }).where(eq(tasks.id,taskId));
-
-  const answer = await getAIAnswer(scrapedText, job.data.question);
-
-  await db.update(tasks).set({
+  await job.updateProgress(50); 
+  const answer = await getAIAnswer(scrapedText, question);
+  await job.updateProgress(70); 
+  await db.insert(tasks).values({
+    url,
+    question,
     status: "completed",
-    aiResponse: answer
-  }).where(eq(tasks.id,taskId));
+    aiResponse:answer
+  })
+  
 
-  return true;
+  await job.updateProgress(100); 
+
+  return answer;
 });

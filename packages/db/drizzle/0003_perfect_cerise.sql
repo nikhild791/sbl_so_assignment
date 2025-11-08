@@ -1,1 +1,0 @@
-ALTER TABLE "tasks" ADD COLUMN "status" text DEFAULT 'queued' NOT NULL;

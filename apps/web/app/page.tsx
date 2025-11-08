@@ -1,42 +1,70 @@
 "use client"
 import { useEffect, useState } from "react";
+import ReactMarkdown from 'react-markdown';
 import {Spinner} from '@repo/ui/spinner';
-import { useRouter } from "next/navigation";
+import { StatusProgress, Step } from "@repo/ui/checkList";
 
 
 export default function Home() {
-    const router = useRouter()
-   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+   const [url, setUrl] = useState("");
+  const [question, setQuestion] = useState("");
+  const [data,setData] = useState("")
   const [loading,setLoading] = useState(false)
-    useEffect(()=>{
-        if(localStorage.getItem('token')){
-            router.push("dashboard")
+  const [taskId, setTaskId] = useState(null)
+  const [finalTaskStatus, setFinalTaskStatus] = useState(null)
+ 
+const [steps, setSteps] = useState<Step[]>([]);
+
+  useEffect(()=>{
+   
+    async function getTaskStatus(){
+        if(taskId!=null){
+         const res = await fetch(`http://localhost:3001/task/${taskId}`)
+        const taskStatus = await res.json()
+        setSteps(prev => [
+  ...prev,
+  { state: taskStatus.state, progress: taskStatus.progress }
+]);
+if(taskStatus.progress===100){
+  setData(taskStatus.result)
+}
+        setFinalTaskStatus(taskStatus.state)
         }
-    },[])
 
+    }
+    getTaskStatus()
+    let timer ;
+    if(taskId && finalTaskStatus !== "completed" ){
+ timer = setInterval(()=>{
+            getTaskStatus()
+        },1500)
+    }
 
+    return ()=>{
+        clearInterval(timer)
+    }
+  },[taskId,finalTaskStatus])
 
 
   const handleSubmit =async (e: React.FormEvent) => {
     setLoading(true)
     e.preventDefault();
-    if(!name || !email){
+    if(!url || !question){
       return null;
     }
-    const res = await fetch('http://localhost:3001/user',{
+    const res = await fetch('http://localhost:3001/task',{
       method:'POST',
        headers: {
-    'Content-Type': 'application/json' // Specify that you're sending JSON data
+    'Content-Type': 'application/json' 
   },
       body:JSON.stringify({
-        name,
-        email
+        url,
+        question
       })
     })
-    const data =  await res.json();
-    localStorage.setItem('token',data.user[0].insertedId)
-    router.push('/dashboard')
+    const data = await res.json();
+
+    setTaskId(data.taskId)
     setLoading(false)
   };
   return (
@@ -47,29 +75,29 @@ export default function Home() {
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white p-6 rounded-xl shadow-sm space-y-4"
         >
-        <h1 className="text-xl font-semibold text-center">Register</h1>
+        <h1 className="text-xl font-semibold text-center">Ask a Website</h1>
 
         <div>
           <label className="block mb-1 text-sm font-medium text-gray-700">
-            USERNAME
+            Website URL
           </label>
           <input
             type="text"
-            placeholder="username"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            placeholder="https://example.com"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
             className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-black outline-none"
           />
         </div>
 
         <div>
           <label className="block mb-1 text-sm font-medium text-gray-700">
-            Email 
+            Your Question
           </label>
           <textarea
-            placeholder="abc@gmail.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            placeholder="What is this site about?"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
             className="w-full rounded-lg border border-gray-300 px-3 py-2 h-24 resize-none focus:ring-2 focus:ring-black outline-none"
           />
         </div>
@@ -82,10 +110,14 @@ export default function Home() {
           {loading ? <Spinner/>  :"Submit"}
         </button>
       </form>
-     
+      <div className="w-full">
+      <StatusProgress title="Website scrapping job" steps={steps} />
+      </div>
             </div>
 
-        
+        <div>
+          <ReactMarkdown>{data}</ReactMarkdown>
+          </div>
       
     </div>
   );

@@ -4,9 +4,8 @@ import { Check, Loader2 } from "lucide-react";
 export type StepStatus = "waiting" | "running" | "success";
 
 export interface Step {
-  title: string;
-  status: StepStatus;
-  messages?: string[];
+  state: string;
+  progress: number;
 }
 
 interface StatusProgressProps {
@@ -15,6 +14,7 @@ interface StatusProgressProps {
 }
 
 export const StatusProgress: FC<StatusProgressProps> = ({ title, steps }) => {
+  console.log(title,steps)
   return (
     <div className="w-full max-w-lg border rounded-lg shadow-sm p-4 bg-white">
       <h2 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">
@@ -26,17 +26,17 @@ export const StatusProgress: FC<StatusProgressProps> = ({ title, steps }) => {
           <div key={index} className="flex items-start space-x-3">
             {/* ICON */}
             <div className="flex flex-col items-center">
-              {step.status === "success" && (
+              {step.state === "completed" && (
                 <div className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center">
                   <Check size={14} />
                 </div>
               )}
 
-              {step.status === "running" && (
+              {step.state === "running" && (
                 <Loader2 size={20} className="text-blue-500 animate-spin" />
               )}
 
-              {step.status === "waiting" && (
+              {step.state === "failed" && (
                 <div className="w-3 h-3 rounded-full bg-gray-300"></div>
               )}
 
@@ -48,15 +48,25 @@ export const StatusProgress: FC<StatusProgressProps> = ({ title, steps }) => {
 
             {/* TEXT */}
             <div>
-              <p className="font-medium text-gray-800">{step.title}</p>
-              {step.messages && step.messages.length > 0 && (
-                <ul className="mt-1 space-y-1">
-                  {step.messages.map((msg, i) => (
-                    <li key={i} className="text-xs text-gray-500">
-                      • {msg}
-                    </li>
-                  ))}
-                </ul>
+              {step.progress ===10 && (
+                <div>
+                  queued
+                  </div>
+              )}
+               {step.progress ===50 && (
+                <div>
+                  scrapped
+                  </div>
+              )}
+              {step.progress ===70 && (
+                <div>
+                  ai calling
+                  </div>
+              )}
+               {step.progress ===100 && (
+                <div>
+                  completed
+                  </div>
               )}
             </div>
           </div>
