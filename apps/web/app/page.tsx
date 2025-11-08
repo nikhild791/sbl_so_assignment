@@ -66,11 +66,11 @@ export default function Home() {
           Submit
         </button>
       </form>
-      if(data){
+     
         <div>
           {data}
           </div>
-      }
+      
     </div>
   );
 }

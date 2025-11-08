@@ -14,8 +14,10 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@google/genai": "^1.29.0",
     "@repo/db": "*",
     "@repo/scrapper": "*",
+    "dotenv": "^16.0.3",
     "express": "^5.1.0"
   },
   "devDependencies": {
