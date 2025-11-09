@@ -5,9 +5,9 @@ import { z } from "zod";
 dotenv.config();
 
 const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
-  REDIS_URL: z.string().url(),
-  GOOGLE_API_KEY: z.string().min(1)
+  DATABASE_URL: z.string(),
+  REDIS_URL: z.string(),
+  GOOGLE_API_KEY: z.string()
   // NODE_ENV: z.enum(["development", "production"]).default("development"),
 });
 

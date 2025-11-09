@@ -6,8 +6,9 @@ services:
       dockerfile: docker/Dockerfile.api
     ports:
       - "3001:3001"
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+    env_file:
+      - .env
+    
     depends_on:
       - postgres
   web:
@@ -21,8 +22,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.worker
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+    env_file:
+      - .env   
     depends_on:
       - redis
 
