@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tasksdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    restart: always
+
+  api:
+    image: nikhil791/so_api:${IMAGE_TAG}
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "3001:3001"
+
+  web:
+    image: nikhil791/so_web:${IMAGE_TAG}
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+  worker:
+    image: nikhil791/so_worker:${IMAGE_TAG}
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgres
+
+volumes:
+  pgdata:

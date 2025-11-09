@@ -5,6 +5,8 @@ import {Spinner} from '@repo/ui/spinner';
 import LoadingOverlay from '@repo/ui/loading';
 import { Step } from "@repo/ui/checkList";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 
 export default function Home() {
    const [url, setUrl] = useState("");
@@ -35,7 +37,7 @@ const [steps, setSteps] = useState<Step[]>([]);
 
     async function getTaskStatus() {
       if (taskId != null) {
-        const res = await fetch(`http://localhost:3001/task/${taskId}`);
+        const res = await fetch(`${API_URL}/task/${taskId}`);
         const taskStatus = await res.json();
         setSteps(buildSteps(taskStatus.progress || 0));
         if (taskStatus.progress === 100) {
@@ -66,7 +68,7 @@ const [steps, setSteps] = useState<Step[]>([]);
       setLoading(false);
       return null;
     }
-    const res = await fetch('http://localhost:3001/task', {
+    const res = await fetch(`${API_URL}/task`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

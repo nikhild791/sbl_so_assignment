@@ -24,6 +24,12 @@ jobs:
           tags: nikhil791/sbl_api:${{ github.sha }}
       - name: Deploy to the VM
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
-          chmod 700 /home/runner/ssh_key
-          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@64.227.169.180 -t "docker stop sbl_api && docker run --name sbl_api -d -p 8080:8080 nikhil791/sbl_api:${{ github.sha }}"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
+          chmod 600 ssh_key
+
+              ssh -i ssh_key -o StrictHostKeyChecking=no ubuntu@YOUR_SERVER_IP <<EOF
+             cd /home/ubuntu/appdir
+            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${GITHUB_SHA}/" .env || echo "IMAGE_TAG=${GITHUB_SHA}" >> .env
+             compose pull
+            docker compose up -d
+           EOF

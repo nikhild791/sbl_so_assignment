@@ -17,6 +17,8 @@ services:
       dockerfile: docker/Dockerfile.web
     ports:
       - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: "http://34.122.35.40:3001"
     
   worker:
     build:
