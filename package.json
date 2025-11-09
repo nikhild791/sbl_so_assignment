@@ -7,10 +7,10 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "start:web":"cd apps/web && npm run start",
-    "start:api":"cd apps/api && npm run start",
-    "start:worker":"cd services/worker && npm run start",
-    "db:generate":"cd packages/db && drizzle-kit generate && ../.."
+    "start:web":"cd ./apps/web && npm run start",
+    "start:api":"cd ./apps/api && npm run start",
+    "start:worker":"cd ./services/worker && npm run start",
+    "db:generate":"cd packages/db && drizzle-kit generate && cd ../.."
   },
   "devDependencies": {
     "prettier": "^3.6.2",
@@ -23,6 +23,7 @@
   "packageManager": "npm@11.4.1",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "services/*"
   ]
 }

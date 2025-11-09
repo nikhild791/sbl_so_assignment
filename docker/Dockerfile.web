@@ -2,14 +2,15 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY ./packages ./packages
-COPY ./packages-lock.json ./packages-lock.json
-COPY ./turbo.json ./turbo.json 
+COPY package*.json turbo.json ./
 
-RUN npm install
+COPY ./packages ./packages
 COPY ./apps/web ./apps/web
 
-RUN npm run build
-RUN cd packages/db && drizzle-kit generate && ../..
-EXPOSE 3001
-CMD ["npm", "start"]
+RUN npm install
+
+RUN npx turbo run build --filter=web...
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start", "--workspace", "web"]

@@ -2,13 +2,11 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY ./packages ./packages
-COPY ./packages-lock.json ./packages-lock.json
-COPY ./turbo.json ./turbo.json 
+COPY . .
 
 RUN npm install
-COPY ./services/worker ./apps/worker
+COPY ./services/worker ./services/worker
 
 RUN npm run build
 
-CMD ["npm", "start:worker"]
+CMD ["npm", "run","start:worker"]

@@ -11,8 +11,8 @@ interface LoadingOverlayProps {
 
 export const LoadingOverlay: FC<LoadingOverlayProps> = ({ visible, title = "Processing", steps }) => {
   if (!visible) return null;
-
   const last = steps.length ? steps[steps.length - 1] : { progress: 0 };
+  if(!last) return null;
   const percent = Math.min(100, Math.max(0, last.progress || 0));
 
   return (
@@ -40,7 +40,7 @@ export const LoadingOverlay: FC<LoadingOverlayProps> = ({ visible, title = "Proc
           <div className="mb-4">
             <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all"
+                className="h-full bg-linear-to-r from-blue-500 to-cyan-400 transition-all"
                 style={{ width: `${percent}%` }}
               />
             </div>
