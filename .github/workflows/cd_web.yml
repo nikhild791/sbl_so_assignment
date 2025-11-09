@@ -31,7 +31,7 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
           chmod 600 ssh_key
 
-          ssh -i ssh_key -o StrictHostKeyChecking=no sbl@34.122.35.40 << EOF
+          ssh -i ssh_key -o StrictHostKeyChecking=no sbl@34.121.236.140 << EOF
             cd /home/sbl/sbl_so
 
             # Ensure .env exists
