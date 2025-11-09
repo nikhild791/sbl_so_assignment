@@ -1,9 +1,7 @@
-import dotenv from "dotenv";
-
 import { Queue, Worker, QueueEvents } from "bullmq";
 import IORedis from "ioredis";
-dotenv.config()
-export const connection = new IORedis({host:"localhost", port:6379 ,maxRetriesPerRequest: null,   
+import {env} from "@repo/config/index"
+export const connection = new IORedis(env.REDIS_URL,{maxRetriesPerRequest: null,   
 });
 
 export const taskQueue = new Queue("scrape-job-queue", { connection });

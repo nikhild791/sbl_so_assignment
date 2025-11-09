@@ -1,10 +1,9 @@
-import dotenv from 'dotenv';
 import { createWorker } from "@repo/queue";
 import { db } from "@repo/db/index";
 import {tasks} from "@repo/db/schema"
 import { getAIAnswer } from "@repo/ai/index"; 
 import { scrape } from "@repo/scrapper/index";
-dotenv.config()
+
 
 export default createWorker(async job => {
   const { url, question } = job.data;

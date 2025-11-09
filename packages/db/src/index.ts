@@ -1,11 +1,11 @@
-    import { drizzle } from "drizzle-orm/node-postgres";
-    import { Pool } from "pg";
-    import * as schema from "./schema"; // Import your schema
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+import * as schema from "./schema"; // Import your schema
+import {env} from '@repo/config/index'
 
-import * as dotenv from "dotenv";
-dotenv.config(); // make sure DATABASE_URL is available
+
     const pool = new Pool({
-      connectionString: process.env.DATABASE_URL!,
+      connectionString: env.DATABASE_URL!,
     });
 
     export const db = drizzle(pool, { schema });

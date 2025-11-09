@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import {env} from "@repo/config/index"
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -11,7 +12,7 @@ ${data}
 QUESTION:
  ${question}
 `
-const ai = new GoogleGenAI({apiKey:  process.env.GOOGLE_API_KEY,});
+const ai = new GoogleGenAI({apiKey:  env.GOOGLE_API_KEY,});
 const response = await ai.models.generateContent({
   
     model: "gemini-2.5-flash",
