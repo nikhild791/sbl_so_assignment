@@ -1,8 +1,8 @@
 name: Deploy the web
 on:
   push:
-    branches: [ main ]
-jobs: 
+    branches: [main]
+jobs:
   build:
     runs-on: ubuntu-latest
     steps:
@@ -14,16 +14,16 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      - name: Build and push 
+
+      - name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .
           file: ./docker/Dockerfile.web
           push: true
-          tags: nikhild791/sbl_web:${{ github.sha }}
+          tags: nikhil791/sbl_web:${{ github.sha }}
       - name: Deploy to the VM
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
           chmod 700 /home/runner/ssh_key
-          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@64.227.169.180 -t "docker stop sbl_web && docker run --name sbl_web -d -p 8080:8080 nikhild791/sbl_web:${{ github.sha }}"
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@64.227.169.180 -t "docker stop sbl_web && docker run --name sbl_web -d -p 8080:8080 nikhil791/sbl_web:${{ github.sha }}"
