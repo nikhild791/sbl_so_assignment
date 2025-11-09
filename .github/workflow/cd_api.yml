@@ -1,0 +1,29 @@
+name: Deploy the api
+on:
+  push:
+    branches: [ main ]
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Docker login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push 
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./docker/Dockerfile.api
+          push: true
+          tags: nikhild791/sbl_api:${{ github.sha }}
+      - name: Deploy to the VM
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
+          chmod 700 /home/runner/ssh_key
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@64.227.169.180 -t "docker stop sbl_api && docker run --name sbl_api -d -p 8080:8080 nikhild791/sbl_api:${{ github.sha }}"
