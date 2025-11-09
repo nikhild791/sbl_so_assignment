@@ -147,6 +147,9 @@ const [steps, setSteps] = useState<Step[]>([]);
                       {step.state === "waiting" && (
                         <div className="w-3 h-3 rounded-full bg-gray-300"></div>
                       )}
+                      {step.state === "failed" && (
+                        <div className="w-3 h-3 rounded-full bg-red-900"></div>
+                      )}
                       {index < steps.length - 1 && (
                         <div className="w-px h-8 bg-gray-300 mt-1"></div>
                       )}
