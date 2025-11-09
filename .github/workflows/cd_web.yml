@@ -23,19 +23,21 @@ jobs:
           push: true
           tags: nikhil791/sbl_web:${{ github.sha }}
       - name: Deploy to the VM
+        env:
+          SHA_TAG: ${{ github.sha }}
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
           chmod 600 ssh_key
 
-          ssh -i ssh_key -o StrictHostKeyChecking=no sbl@34.122.35.40 << 'EOF'
+          ssh -i ssh_key -o StrictHostKeyChecking=no sbl@34.122.35.40 << EOF
             cd /home/sbl/sbl_so
 
-            # Update tag in .env
-            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${GITHUB_SHA}/" .env || echo "IMAGE_TAG=${GITHUB_SHA}" >> .env
+            # Ensure .env exists
+            touch .env
 
-            # Pull new images
+            # Write IMAGE_TAG correctly
+            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=$SHA_TAG/" .env || echo "IMAGE_TAG=$SHA_TAG" >> .env
+
             docker compose pull
-
-            # Restart services
             docker compose up -d
           EOF
