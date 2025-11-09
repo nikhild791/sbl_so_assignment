@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+    depends_on:
+      - postgres
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+      args:
+        - DB_URL=postgresql://postgres:postgres@postgres:5432/postgres
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+    depends_on:
+      - postgres
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=mypassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

@@ -1,0 +1,15 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY ./packages ./packages
+COPY ./packages-lock.json ./packages-lock.json
+COPY ./turbo.json ./turbo.json 
+
+RUN npm install
+COPY ./apps/api ./apps/api
+
+RUN npm run build
+RUN npm run db:generate
+EXPOSE 3001
+CMD ["npm", "start:backend"]

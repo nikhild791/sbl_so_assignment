@@ -1,0 +1,15 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY ./packages ./packages
+COPY ./packages-lock.json ./packages-lock.json
+COPY ./turbo.json ./turbo.json 
+
+RUN npm install
+COPY ./apps/web ./apps/web
+
+RUN npm run build
+RUN cd packages/db && drizzle-kit generate && ../..
+EXPOSE 3001
+CMD ["npm", "start"]
