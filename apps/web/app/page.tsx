@@ -78,17 +78,9 @@ export default function Home() {
     }
 
     const host = parsed.hostname;
-    const isIPv4 = /^\d+\.\d+\.\d+\.\d+$/.test(host);
     if (host === "localhost")
       return { ok: false, reason: "Localhost URLs are not allowed." };
-    if (isIPv4) {
-      const parts = host.split(".").map((p) => parseInt(p, 10));
-      const a = parts[0];
-      const b = parts[1];
-      if (a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168))
-        return { ok: false, reason: "Private IP addresses are not allowed." };
-      if (a === 127) return { ok: false, reason: "Loopback addresses are not allowed." };
-    }
+    
 
     return { ok: true, normalized: parsed.toString() };
   };
