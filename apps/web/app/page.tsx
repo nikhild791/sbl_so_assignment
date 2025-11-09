@@ -49,7 +49,7 @@ const [steps, setSteps] = useState<Step[]>([]);
 
     getTaskStatus();
     let timer: any;
-    if (taskId && finalTaskStatus !== "completed") {
+    if (taskId && finalTaskStatus !== "completed" && finalTaskStatus!=="failed") {
       timer = setInterval(() => {
         getTaskStatus();
       }, 1500);
