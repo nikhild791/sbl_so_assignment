@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Spinner } from "@repo/ui/spinner";
-import LoadingOverlay from "@repo/ui/loading";
 import { Step } from "@repo/ui/checkList";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -234,10 +233,7 @@ export default function Home() {
         </div>
       )}
 
-      <LoadingOverlay
-        visible={!!taskId && finalTaskStatus !== "completed"}
-        steps={steps}
-      />
+   
     </div>
   );
 }
