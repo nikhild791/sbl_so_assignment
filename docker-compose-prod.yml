@@ -14,7 +14,7 @@ services:
     restart: always
 
   api:
-    image: nikhil791/so_api:${IMAGE_TAG}
+    image: nikhil791/sbl_api:${API_TAG}
     restart: always
     env_file:
       - .env
@@ -25,7 +25,7 @@ services:
       - "3001:3001"
 
   web:
-    image: nikhil791/sbl_web:${IMAGE_TAG}
+    image: nikhil791/sbl_web:${WEB_TAG}
     restart: always
     env_file:
       - .env

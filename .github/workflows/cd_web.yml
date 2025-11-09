@@ -38,7 +38,7 @@ jobs:
             touch .env
 
             # Write IMAGE_TAG correctly
-            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=$SHA_TAG/" .env || echo "IMAGE_TAG=$SHA_TAG" >> .env
+            sed -i "s/^WEB_TAG=.*/WEB_TAG=${GITHUB_SHA}/" .env || echo "WEB_TAG=${GITHUB_SHA}" >> .env
 
             docker compose pull
             docker compose up -d
