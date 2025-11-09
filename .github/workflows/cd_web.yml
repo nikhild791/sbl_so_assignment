@@ -27,9 +27,9 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
           chmod 600 ssh_key
 
-              ssh -i ssh_key -o StrictHostKeyChecking=no ubuntu@YOUR_SERVER_IP <<EOF
-             cd /home/ubuntu/appdir
+          ssh -i ssh_key -o StrictHostKeyChecking=no ubuntu@34.122.35.40 <<EOF
+            cd /home/ubuntu/sbl_so
             sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${GITHUB_SHA}/" .env || echo "IMAGE_TAG=${GITHUB_SHA}" >> .env
-             compose pull
+            compose pull
             docker compose up -d
-           EOF
+          EOF
