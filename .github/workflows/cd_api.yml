@@ -29,7 +29,7 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
           chmod 600 ssh_key
 
-          ssh -i ssh_key -o StrictHostKeyChecking=no sbl@34.121.236.140 << 'EOF'
+          ssh -i ssh_key -o StrictHostKeyChecking=no sbl@34.121.236.140 << EOF
             set -e
             cd /home/sbl/sbl_so
 
