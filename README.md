@@ -87,3 +87,4 @@ npm --prefix ./apps/web run dev
 This project demonstrates a modern TypeScript full-stack setup with a modular monorepo layout, separating UI, API, worker and shared packages. It is suitable for extension with CI, deployment, and additional integration tests.
 
 
+project completed
