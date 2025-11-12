@@ -16,7 +16,6 @@ export async function scrape(url:string) {
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "domcontentloaded" });
 
- 
   const text = await page.$eval("body", el => el.innerText);
 
 
@@ -25,7 +24,6 @@ export async function scrape(url:string) {
   return text;
 }
 
-// Optional: call when app terminates
 export async function shutdown() {
   if (browser) await browser.close();
 }

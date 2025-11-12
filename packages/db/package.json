@@ -9,7 +9,7 @@
     "drizzle:generate": "drizzle-kit generate",
     "drizzle:migrate": "tsx src/migrate.ts",
     "drizzle:studio": "drizzle-kit studio"
-  },
+    },
   "exports":{
 "./index": "./dist/index.js",
     "./schema": "./dist/schema/index.js"

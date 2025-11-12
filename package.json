@@ -10,7 +10,8 @@
     "start:web":"cd ./apps/web && npm run start",
     "start:api":"cd ./apps/api && npm run start",
     "start:worker":"cd ./services/worker && npm run start",
-    "db:generate":"cd packages/db && drizzle-kit generate && cd ../.."
+    "db:generate":"cd packages/db && drizzle-kit generate && cd ../..",
+    "db:push":"drizzle-kit push --config packages/db/drizzle.config.ts"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

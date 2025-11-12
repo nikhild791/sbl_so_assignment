@@ -4,5 +4,6 @@
     "rootDir": "./src",
     "outDir": "./dist"
   },
-  "exclude": ["drizzle.config.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["drizzle.config.ts","dist","node_modules"]
 }
