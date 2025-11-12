@@ -31,15 +31,24 @@ jobs:
 
           ssh -i ssh_key -o StrictHostKeyChecking=no sbl@34.121.236.140 << EOF
             cd /home/sbl/sbl_so
-
+            set -e
             # Ensure .env exists
             touch .env
 
             # Write IMAGE_TAG correctly
             sed -i "s/^WORKER_TAG=.*/WORKER_TAG=${GITHUB_SHA}/" .env || echo "WORKER_TAG=${GITHUB_SHA}" >> .env
 
+            echo "Stopping old containers..."
+            docker compose down --remove-orphans
+
+            echo "Pulling latest images..."
             docker compose pull
-            docker compose up -d
+
+            echo "Starting new containers..."
+            docker compose up -d --force-recreate
+
+            echo "Cleaning up unused resources..."
+            docker system prune -af
           EOF
 
 
